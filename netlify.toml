@@ -1,7 +1,15 @@
-# netlify.toml
 [build]
-  command = "npm run build"
+  command = "next build"
   publish = ".next"
+
+[build.environment]
+  NEXT_STATIC_DIRECTORY = "true"
+  NODE_VERSION = "18"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

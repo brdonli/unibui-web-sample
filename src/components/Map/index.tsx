@@ -44,10 +44,26 @@ const options = {
   ],
 };
 
+type Cluster = {
+  type: "Feature";
+  id: string | number; // Changed to allow string or number
+  properties: {
+    cluster: boolean;
+    cluster_id?: number;
+    point_count?: number;
+    jobId?: string;
+    job?: Job;
+  };
+  geometry: {
+    type: "Point";
+    coordinates: [number, number];
+  };
+};
+
 const MapComponent = () => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [clusters, setClusters] = useState<any[]>([]);
+  const [clusters, setClusters] = useState<Cluster[]>([]);
   const [userLocation, setUserLocation] =
     useState<google.maps.LatLngLiteral | null>(null);
   const [initialZoom, setInitialZoom] = useState(4); // Default zoom for US view
@@ -129,7 +145,7 @@ const MapComponent = () => {
     const newClusters = newIndex.getClusters(
       [sw.lng(), sw.lat(), ne.lng(), ne.lat()],
       Math.floor(initialZoom)
-    );
+    ) as unknown as Cluster[];
 
     setClusters(newClusters);
   }, [map, bounds, jobs, initialZoom]);
@@ -165,7 +181,8 @@ const MapComponent = () => {
 
   const handleMapClick = useCallback(() => {
     setSelectedJob(null);
-  }, []);
+    setIsJobPanelMinimized(true);
+  }, [setIsJobPanelMinimized]);
 
   const handleJobClick = useCallback(
     (clickedJob: Job) => {
@@ -220,7 +237,7 @@ const MapComponent = () => {
                   count={cluster.properties.point_count}
                   onClick={() => {
                     const expansionZoom = Math.min(
-                      index?.getClusterExpansionZoom(cluster.id) || 20,
+                      index?.getClusterExpansionZoom(Number(cluster.id)) || 20,
                       20
                     );
                     map?.setZoom(expansionZoom);
@@ -235,8 +252,8 @@ const MapComponent = () => {
                 key={cluster.properties.jobId}
                 position={position}
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevent map click from triggering
-                  setSelectedJob(cluster.properties.job);
+                  e.stopPropagation();
+                  setSelectedJob(cluster.properties.job || null);
                 }}
               />
             );

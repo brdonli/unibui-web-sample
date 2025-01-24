@@ -1,5 +1,4 @@
 import { Job } from "@/types/job";
-import Image from "next/image";
 
 interface JobCardProps {
   companyName: string;
@@ -10,13 +9,6 @@ interface JobCardProps {
 
 const JobCard = ({ companyName, jobs, distance, onJobClick }: JobCardProps) => {
   const getRandomLogo = () => {
-    const colors = [
-      "bg-blue-500",
-      "bg-green-500",
-      "bg-red-500",
-      "bg-purple-500",
-    ];
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
     return companyName.charAt(0).toUpperCase();
   };
 

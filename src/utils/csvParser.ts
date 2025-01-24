@@ -80,14 +80,22 @@ const getRandomCoordInCity = (location: string) => {
   };
 };
 
+type JobCSVRow = {
+  Location: string;
+  "Job Title": string;
+  "Company Name": string;
+  "Job Description": string;
+  Requirements: string;
+};
+
 export const parseJobs = async (csvContent: string): Promise<Job[]> => {
   return new Promise((resolve, reject) => {
     Papa.parse(csvContent, {
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
-        const jobs: Job[] = results.data
-          .map((row: any, index: number) => {
+        const jobs: Job[] = (results.data as JobCSVRow[])
+          .map((row: JobCSVRow, index: number): Job | null => {
             if (!row["Location"]) return null;
 
             const coordinates = getRandomCoordInCity(row["Location"]);
@@ -105,12 +113,14 @@ export const parseJobs = async (csvContent: string): Promise<Job[]> => {
               coordinates,
             };
           })
-          .filter((job): job is Job => job !== null);
+          .filter(
+            (job): job is Job => job !== null && job.coordinates !== undefined
+          );
 
         console.log(`Parsed ${jobs.length} jobs with coordinates`);
         resolve(jobs);
       },
-      error: (error) => reject(error),
+      error: (error: Error) => reject(error),
     });
   });
 };

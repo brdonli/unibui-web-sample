@@ -5,13 +5,7 @@ import {
   BriefcaseIcon,
   AcademicCapIcon,
 } from "@heroicons/react/24/outline";
-import {
-  motion,
-  AnimatePresence,
-  useMotionValue,
-  useTransform,
-  PanInfo,
-} from "framer-motion";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import JobCard from "./JobCard";
 import { useState, useMemo, useEffect, useCallback } from "react";
 
@@ -37,7 +31,6 @@ const experienceLevelOptions = [
 ];
 
 const JobPanel = ({
-  job,
   jobs,
   onClose,
   userLocation,
@@ -269,7 +262,7 @@ const JobPanel = ({
   const handleClose = useCallback(() => {
     setIsMinimized(true);
     setTimeout(onClose, 300);
-  }, [onClose]);
+  }, [onClose, setIsMinimized]);
 
   return (
     <motion.div

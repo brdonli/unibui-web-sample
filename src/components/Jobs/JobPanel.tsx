@@ -210,6 +210,7 @@ const JobPanel = ({
       );
     }
 
+    // Group jobs by company first
     const grouped = filteredJobs.reduce((acc, job) => {
       let distance: number | null = null;
       if (userLocation && job.coordinates) {
@@ -219,10 +220,6 @@ const JobPanel = ({
           job.coordinates.lat,
           job.coordinates.lng
         );
-
-        if (selectedDistance && distance > selectedDistance) {
-          return acc;
-        }
       }
 
       if (!acc[job.companyName]) {
@@ -244,6 +241,18 @@ const JobPanel = ({
 
       return acc;
     }, {} as Record<string, { jobs: Job[]; distance: number | null }>);
+
+    // Apply distance filter after grouping
+    if (selectedDistance !== null) {
+      Object.keys(grouped).forEach((companyName) => {
+        if (
+          grouped[companyName].distance === null ||
+          grouped[companyName].distance > selectedDistance
+        ) {
+          delete grouped[companyName];
+        }
+      });
+    }
 
     return Object.entries(grouped).sort((a, b) => {
       if (a[1].distance === null) return 1;

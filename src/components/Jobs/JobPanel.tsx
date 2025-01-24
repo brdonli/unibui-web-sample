@@ -44,11 +44,19 @@ const JobPanel = ({
   const [selectedJobType, setSelectedJobType] = useState("All Types");
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [selectedExperience, setSelectedExperience] = useState("All Levels");
+  const [dimensions, setDimensions] = useState({
+    panelHeight: 0,
+    minimizedHeight: 80,
+    expandedOffset: 0,
+  });
 
-  // Panel height calculations
-  const panelHeight = window.innerHeight * 0.8; // 80vh
-  const minimizedHeight = 80; // height when minimized
-  const expandedOffset = window.innerHeight * 0.2; // 20% from top when expanded
+  useEffect(() => {
+    setDimensions({
+      panelHeight: window.innerHeight * 0.8,
+      minimizedHeight: 80,
+      expandedOffset: window.innerHeight * 0.2,
+    });
+  }, []);
 
   // Animation configuration
   const springConfig = {
@@ -61,11 +69,11 @@ const JobPanel = ({
   // Panel animation variants
   const panelVariants = {
     minimized: {
-      y: panelHeight - minimizedHeight,
+      y: dimensions.panelHeight - dimensions.minimizedHeight,
       transition: springConfig,
     },
     expanded: {
-      y: expandedOffset,
+      y: dimensions.expandedOffset,
       transition: springConfig,
     },
   };
@@ -273,8 +281,8 @@ const JobPanel = ({
       style={{ height: "80vh", touchAction: "none" }}
       drag="y"
       dragConstraints={{
-        top: expandedOffset,
-        bottom: panelHeight - minimizedHeight,
+        top: dimensions.expandedOffset,
+        bottom: dimensions.panelHeight - dimensions.minimizedHeight,
       }}
       dragElastic={0.1}
       dragMomentum={true}

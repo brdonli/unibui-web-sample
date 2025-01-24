@@ -10,5 +10,3 @@ export interface Job {
     lng: number;
   };
 }
-
-export interface MapRef extends google.maps.Map {}

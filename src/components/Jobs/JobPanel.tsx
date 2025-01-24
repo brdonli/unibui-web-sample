@@ -23,6 +23,7 @@ interface JobPanelProps {
   searchQuery: string;
   isMinimized: boolean;
   setIsMinimized: (value: boolean) => void;
+  onJobClick: (job: Job) => void;
 }
 
 const distanceOptions = [5, 10, 25, 50, 100, 200, 300, 400, 500];
@@ -43,6 +44,7 @@ const JobPanel = ({
   searchQuery,
   isMinimized,
   setIsMinimized,
+  onJobClick,
 }: JobPanelProps) => {
   const [selectedDistance, setSelectedDistance] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -461,6 +463,7 @@ const JobPanel = ({
                 companyName={companyName}
                 jobs={jobs}
                 distance={distance}
+                onJobClick={onJobClick}
               />
             ))
           )}

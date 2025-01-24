@@ -5,9 +5,10 @@ interface JobCardProps {
   companyName: string;
   jobs: Job[];
   distance: number | null;
+  onJobClick: (job: Job) => void;
 }
 
-const JobCard = ({ companyName, jobs, distance }: JobCardProps) => {
+const JobCard = ({ companyName, jobs, distance, onJobClick }: JobCardProps) => {
   const getRandomLogo = () => {
     const colors = [
       "bg-blue-500",
@@ -42,6 +43,7 @@ const JobCard = ({ companyName, jobs, distance }: JobCardProps) => {
           <div
             key={job.id}
             className="bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors cursor-pointer"
+            onClick={() => onJobClick?.(job)}
           >
             <div className="flex justify-between items-start">
               <div>

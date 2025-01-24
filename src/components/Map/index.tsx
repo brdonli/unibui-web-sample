@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { AnimatePresence } from "framer-motion";
 import { GoogleMap, LoadScript } from "@react-google-maps/api";
 import CustomMarker from "./CustomMarker";
 import { Job } from "@/types/job";
@@ -8,6 +9,7 @@ import { parseJobs } from "@/utils/csvParser";
 import supercluster from "supercluster";
 import JobPanel from "@/components/Jobs/JobPanel";
 import SearchBar from "@/components/Jobs/SearchBar";
+import JobDetailPage from "@/components/Jobs/JobDetail";
 
 const defaultCenter = {
   lat: 39.8283, // Center of US
@@ -54,6 +56,9 @@ const MapComponent = () => {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isJobPanelMinimized, setIsJobPanelMinimized] = useState(true);
+  const [selectedCompanyJobs, setSelectedCompanyJobs] = useState<Job[] | null>(
+    null
+  );
 
   useEffect(() => {
     const loadJobs = async () => {
@@ -162,6 +167,21 @@ const MapComponent = () => {
     setSelectedJob(null);
   }, []);
 
+  const handleJobClick = useCallback(
+    (clickedJob: Job) => {
+      const companyJobs = jobs.filter(
+        (job) => job.companyName === clickedJob.companyName
+      );
+      setSelectedCompanyJobs(companyJobs);
+    },
+    [jobs]
+  );
+
+  // Add the back handler:
+  const handleBackFromDetail = useCallback(() => {
+    setSelectedCompanyJobs(null);
+  }, []);
+
   return (
     <>
       <SearchBar
@@ -232,7 +252,17 @@ const MapComponent = () => {
         searchQuery={searchQuery}
         isMinimized={isJobPanelMinimized}
         setIsMinimized={setIsJobPanelMinimized}
+        onJobClick={handleJobClick}
       />
+
+      <AnimatePresence mode="wait">
+        {selectedCompanyJobs && (
+          <JobDetailPage
+            companyJobs={selectedCompanyJobs}
+            onBack={handleBackFromDetail}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 };

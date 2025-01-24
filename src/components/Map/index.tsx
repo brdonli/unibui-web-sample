@@ -75,16 +75,27 @@ const MapComponent = () => {
   const [selectedCompanyJobs, setSelectedCompanyJobs] = useState<Job[] | null>(
     null
   );
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadJobs = async () => {
+      setIsLoading(true);
       try {
         const response = await fetch("/data/jobs.csv");
+        if (!response.ok) {
+          throw new Error(`Failed to fetch jobs: ${response.statusText}`);
+        }
         const text = await response.text();
         const parsedJobs = await parseJobs(text);
         setJobs(parsedJobs);
       } catch (error) {
         console.error("Error loading jobs:", error);
+        setError(
+          error instanceof Error ? error.message : "Failed to load jobs"
+        );
+      } finally {
+        setIsLoading(false);
       }
     };
     loadJobs();
@@ -198,6 +209,30 @@ const MapComponent = () => {
   const handleBackFromDetail = useCallback(() => {
     setSelectedCompanyJobs(null);
   }, []);
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center p-4">
+          <p className="text-red-500 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <>

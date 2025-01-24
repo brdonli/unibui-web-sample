@@ -90,37 +90,67 @@ type JobCSVRow = {
 
 export const parseJobs = async (csvContent: string): Promise<Job[]> => {
   return new Promise((resolve, reject) => {
+    if (!csvContent.trim()) {
+      reject(new Error("CSV content is empty"));
+      return;
+    }
+
     Papa.parse(csvContent, {
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
+        if (results.errors.length > 0) {
+          console.warn("CSV parsing errors:", results.errors);
+        }
+
         const jobs: Job[] = (results.data as JobCSVRow[])
           .map((row: JobCSVRow, index: number): Job | null => {
-            if (!row["Location"]) return null;
+            try {
+              if (!row["Location"]) {
+                console.warn(`Missing location for job at index ${index}`);
+                return null;
+              }
 
-            const coordinates = getRandomCoordInCity(row["Location"]);
-            if (!coordinates) return null;
+              const coordinates = getRandomCoordInCity(row["Location"]);
+              if (!coordinates) {
+                console.warn(
+                  `Failed to get coordinates for location: ${row["Location"]}`
+                );
+                return null;
+              }
 
-            return {
-              id: `job-${index}-${Date.now()}-${Math.random()
-                .toString(36)
-                .substr(2, 9)}`,
-              title: row["Job Title"] || "Unknown Title",
-              companyName: row["Company Name"] || "Unknown Company",
-              location: row["Location"],
-              description: row["Job Description"] || "",
-              requirements: row["Requirements"] || "",
-              coordinates,
-            };
+              return {
+                id: `job-${index}-${Date.now()}-${Math.random()
+                  .toString(36)
+                  .substr(2, 9)}`,
+                title: row["Job Title"] || "Unknown Title",
+                companyName: row["Company Name"] || "Unknown Company",
+                location: row["Location"],
+                description: row["Job Description"] || "",
+                requirements: row["Requirements"] || "",
+                coordinates,
+              };
+            } catch (error) {
+              console.error(`Error processing job at index ${index}:`, error);
+              return null;
+            }
           })
           .filter(
             (job): job is Job => job !== null && job.coordinates !== undefined
           );
 
+        if (jobs.length === 0) {
+          reject(new Error("No valid jobs found in the CSV data"));
+          return;
+        }
+
         console.log(`Parsed ${jobs.length} jobs with coordinates`);
         resolve(jobs);
       },
-      error: (error: Error) => reject(error),
+      error: (error: Error) => {
+        console.error("CSV parsing error:", error);
+        reject(new Error(`Failed to parse CSV: ${error.message}`));
+      },
     });
   });
 };

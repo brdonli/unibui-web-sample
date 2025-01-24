@@ -1,3 +1,4 @@
+import { type FC } from "react";
 import { Job } from "@/types/job";
 
 interface JobCardProps {
@@ -7,24 +8,30 @@ interface JobCardProps {
   onJobClick: (job: Job) => void;
 }
 
-const JobCard = ({ companyName, jobs, distance, onJobClick }: JobCardProps) => {
-  const getRandomLogo = () => {
-    return companyName.charAt(0).toUpperCase();
+const JobCard: FC<JobCardProps> = ({
+  companyName,
+  jobs,
+  distance,
+  onJobClick,
+}) => {
+  const getCompanyInitial = (name: string): string => {
+    return name.charAt(0).toUpperCase();
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-4">
+    <article className="bg-white rounded-lg shadow-md p-4 mb-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
           <div
-            className={`w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-bold bg-blue-500`}
+            className="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-bold bg-orange-600"
+            aria-label={`${companyName} logo`}
           >
-            {getRandomLogo()}
+            {getCompanyInitial(companyName)}
           </div>
           <h3 className="ml-4 text-xl font-semibold">{companyName}</h3>
         </div>
         {distance !== null && (
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-gray-500" role="text">
             {distance.toFixed(1)} miles away
           </span>
         )}
@@ -32,10 +39,10 @@ const JobCard = ({ companyName, jobs, distance, onJobClick }: JobCardProps) => {
 
       <div className="space-y-3">
         {jobs.map((job) => (
-          <div
+          <button
             key={job.id}
-            className="bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors cursor-pointer"
-            onClick={() => onJobClick?.(job)}
+            className="w-full text-left bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors"
+            onClick={() => onJobClick(job)}
           >
             <div className="flex justify-between items-start">
               <div>
@@ -50,10 +57,10 @@ const JobCard = ({ companyName, jobs, distance, onJobClick }: JobCardProps) => {
                 <p className="text-sm font-medium text-gray-900">TBD/hr</p>
               </div>
             </div>
-          </div>
+          </button>
         ))}
       </div>
-    </div>
+    </article>
   );
 };
 

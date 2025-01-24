@@ -57,7 +57,7 @@ const JobDetailPage = ({ companyJobs, onBack }: JobDetailPageProps) => {
       }}
     >
       {/* Header Image */}
-      <div className="relative h-48 bg-red-600">
+      <div className="relative h-48 bg-orange-600">
         <button
           onClick={onBack}
           className="absolute top-4 left-4 p-2 rounded-full bg-white/10 backdrop-blur-sm"
@@ -76,7 +76,7 @@ const JobDetailPage = ({ companyJobs, onBack }: JobDetailPageProps) => {
 
       {/* Company Info */}
       <div className="px-4 -mt-12 relative">
-        <div className="bg-red-600 w-24 h-24 rounded-xl flex items-center justify-center mb-4">
+        <div className="bg-orange-600 w-24 h-24 rounded-xl flex items-center justify-center mb-4">
           <span className="text-3xl text-white font-bold">
             {company.companyName.charAt(0)}
           </span>
